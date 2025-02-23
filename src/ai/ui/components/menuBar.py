@@ -5,8 +5,18 @@ class MenuBar(tk.Menu):
         super().__init__(parent)
         parent.config(menu=self)
 
+        # Common style options
+        menu_options = {
+            'activebackground': '#d0e7ff',
+            'activeforeground': '#000000',
+            'background': '#b0c4de',
+            'foreground': '#000000',
+            'font': ('Helvetica', 10),
+            'tearoff': 0
+        }
+
         # Add file menu
-        self.file_menu = tk.Menu(self, tearoff=0)
+        self.file_menu = tk.Menu(self, **menu_options)
         self.add_cascade(label="File", menu=self.file_menu)
         self.file_menu.add_command(label="New")
         self.file_menu.add_command(label="Open")
@@ -15,7 +25,7 @@ class MenuBar(tk.Menu):
         self.file_menu.add_command(label="Exit", command=parent.quit)
 
         # Add edit menu
-        self.edit_menu = tk.Menu(self, tearoff=0)
+        self.edit_menu = tk.Menu(self, **menu_options)
         self.add_cascade(label="Edit", menu=self.edit_menu)
         self.edit_menu.add_command(label="Undo")
         self.edit_menu.add_command(label="Redo")
