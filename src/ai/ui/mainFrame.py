@@ -53,6 +53,7 @@ class MainFrame(ctk.CTk):
                 for choice in content['choices']:
                     self.content_display.display_content(f"** {choice['key']}. {choice['value']}")
                 
+                print(type(content['answer']))
                 self.content_display.display_content(f"Answer: {content['answer']['key']}. {content['answer']['explaination']}")
             self.update_status(100, "Completed")
         

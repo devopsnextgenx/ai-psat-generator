@@ -9,13 +9,13 @@ agents:
       openAIConfig:
         temperature: 0.23
         top_p: 1
-    useLangChain: True
-    llmConfig:
-      base_url: "https://hackathon-2025.openai.azure.com/"
-      apiVersion: 2024-05-01-preview
-      model: gpt-4o-2024-08-06
-      openAIConfig:
-        temperature: 0.23
-        top_p: 1
+    useLangChain: False
+    # llmConfig:
+    #   base_url: "https://hackathon-2025.openai.azure.com/"
+    #   apiVersion: 2024-05-01-preview
+    #   model: gpt-4o-2024-08-06
+    #   openAIConfig:
+    #     temperature: 0.23
+    #     top_p: 1
 
         
