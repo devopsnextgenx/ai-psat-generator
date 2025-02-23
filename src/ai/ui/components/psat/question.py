@@ -95,3 +95,15 @@ class QuestionDisplay(ctk.CTkFrame):
 
     def get_selected_choice(self):
         return self.selected_choice.get()
+
+    def hide_content(self):
+        self.question_label.pack_forget()
+        self.choices_frame.pack_forget()
+        self.answer_frame.pack_forget()
+        self.toggle_button.pack_forget()
+
+    def show_content(self):
+        self.question_label.pack()
+        self.choices_frame.pack(fill=ctk.X, pady=5)
+        self.answer_frame.pack(fill=ctk.X, pady=5)
+        self.toggle_button.pack(pady=5)

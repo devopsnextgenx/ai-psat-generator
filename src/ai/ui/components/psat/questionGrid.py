@@ -14,14 +14,16 @@ class QuestionGrid(ctk.CTkFrame):
         self.create_widgets()
 
     def create_widgets(self):
-        # Grid Frame
-        self.grid_frame = ctk.CTkFrame(self)
-        self.grid_frame.pack(side=ctk.LEFT, padx=10, pady=10)
-
         # Question Display
         self.question_display = QuestionDisplay(self)
-        self.question_display.pack(side=ctk.RIGHT, padx=10, pady=10)
-        self.question_display.pack_forget()  # Hide initially
+        self.question_display.pack(side=ctk.TOP, padx=10, pady=10)
+        self.question_display.configure(width=600, height=700)
+        self.question_display.pack_propagate(False)  # Prevent resizing
+        self.question_display.hide_content()  # Hide content initially
+
+        # Grid Frame
+        self.grid_frame = ctk.CTkFrame(self)
+        self.grid_frame.pack(side=ctk.BOTTOM, padx=10, pady=10)
 
         # Navigation Buttons
         button_frame = ctk.CTkFrame(self)
@@ -50,8 +52,8 @@ class QuestionGrid(ctk.CTkFrame):
             button = ctk.CTkButton(
                 self.grid_frame,
                 text=str(i+1),
-                width=50,
-                height=50,
+                width=30,
+                height=30,
                 command=lambda idx=i: self.select_question(idx),
                 fg_color=("gray75", "gray30")
             )
@@ -81,7 +83,7 @@ class QuestionGrid(ctk.CTkFrame):
             question['explanation'],
             self.user_selections[index]
         )
-        self.question_display.pack(side=ctk.RIGHT, padx=10, pady=10)
+        self.question_display.show_content()  # Show content
         
         # Enable buttons
         self.submit_button.configure(state="normal")
@@ -97,7 +99,7 @@ class QuestionGrid(ctk.CTkFrame):
             self.question_buttons[self.current_question_index].configure(
                 fg_color=("gray75", "gray30")
             )
-            self.question_display.pack_forget()
+            self.question_display.hide_content()  # Hide content
             
             # Reset current state
             self.current_question_index = None
