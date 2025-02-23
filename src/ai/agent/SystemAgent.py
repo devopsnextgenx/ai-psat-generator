@@ -52,6 +52,5 @@ class SystemAgent:
         """
 
         action_response: AgentResponse  = self.agents['bot'].timed_generate(agentPrompt, ResponseSchema.model_json_schema())
-        print(action_response)
 
         return action_response
