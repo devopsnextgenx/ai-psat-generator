@@ -1,0 +1,21 @@
+agents:
+  - name: "qwen2.5-coder"
+    role: "agent"
+    basePrompt: "You are expert at setting PSAT Questions and Question Papers."
+    # useLangChain: False
+    # llmConfig:
+    #   base_url: "http://localhost:11434"
+    #   model: "qwen2.5-coder"
+    #   openAIConfig:
+    #     temperature: 0.23
+    #     top_p: 1
+    useLangChain: True
+    llmConfig:
+      base_url: "https://plm-hackathon-2025.openai.azure.com/"
+      apiVersion: 2024-05-01-preview
+      model: gpt-4o-2024-08-06
+      openAIConfig:
+        temperature: 0.23
+        top_p: 1
+
+        
