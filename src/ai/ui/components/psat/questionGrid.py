@@ -74,7 +74,7 @@ class QuestionTrackerButton(ctk.CTkButton):
 class QuestionTrackerView(ctk.CTkFrame):
     """Component for tracking and navigating between questions"""
     def __init__(self, master, questions: List[QuestionModel], on_question_select: Callable):
-        super().__init__(master)
+        super().__init__(master, fg_color="transparent")
         self.questions = questions
         self.on_question_select = on_question_select
         self.current_question = 1

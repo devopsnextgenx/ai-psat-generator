@@ -7,8 +7,8 @@ import json
 
 class QuestionPaperController(ctk.CTkFrame):
     """Controller class for the question paper UI"""
-    def __init__(self, master, status_bar, questions):
-        super().__init__(master)
+    def __init__(self, parent, status_bar, questions):
+        super().__init__(parent, fg_color="transparent")
         self.status_bar = status_bar
         self.questions = questions
         self.current_question_id = 1
@@ -17,7 +17,7 @@ class QuestionPaperController(ctk.CTkFrame):
         self._create_sample_questions()
         
         # Create main container frame
-        self.main_frame = ctk.CTkFrame(master)
+        self.main_frame = ctk.CTkFrame(parent, fg_color="transparent")
         self.main_frame.pack(fill=tk.BOTH, expand=True)
         
         # Add title label

@@ -3,20 +3,23 @@ import tkinter as tk
 
 class UserPrompt(ctk.CTkFrame):
     def __init__(self, parent):
-        super().__init__(parent)
-        self.pack(side="bottom", fill="x", padx=10, pady=5)
+        super().__init__(parent, fg_color="transparent")
+        self.pack(side="bottom", fill="both", padx=10, pady=5, expand=True)
 
         # Create input textbox
         self.prompt = ctk.CTkTextbox(self, height=100)  # Approx 4 lines
-        self.prompt.pack(side="top", fill="x")
-        # self.prompt.pack_propagate(False)
+        self.prompt.pack(side="top", fill="both", expand=True)
+        self.prompt.pack_propagate(False)
         self.prompt.configure(font=("Arial", 14))  # Adjust text size
 
+        self.button_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.button_frame.pack(side="bottom", fill="both", expand=True, padx=10, pady=5)
+
         # Create reset and submit buttons
-        self.reset_button = ctk.CTkButton(self, text="Reset", command=self.reset)
+        self.reset_button = ctk.CTkButton(self.button_frame, text="Reset", command=self.reset)
         self.reset_button.pack(side="left", padx=5, pady=5)
 
-        self.submit_button = ctk.CTkButton(self, text="Submit", command=self.submit)
+        self.submit_button = ctk.CTkButton(self.button_frame, text="Submit", command=self.submit)
         self.submit_button.pack(side="right", padx=5, pady=5)
 
         # Bind the event to dynamically resize the textbox

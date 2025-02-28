@@ -4,9 +4,9 @@ from ai.ui.utils.parsers import parse_markdown
 
 class ContentDisplay(ctk.CTkFrame):
     def __init__(self, parent):
-        super().__init__(parent)
-        self.pack(fill="both", expand=True)
-        self.content = ctk.CTkTextbox(self, wrap="word", height=250, state="disabled", fg_color="#1E1E1E", text_color="#EAEAEA", border_color="#444444")
+        super().__init__(parent, fg_color="transparent")
+        self.pack(side="bottom", fill="both", expand=True)
+        self.content = ctk.CTkTextbox(self, wrap="word", height=400, state="disabled", fg_color="#1E1E1E", text_color="#EAEAEA", border_color="#444444")
         self.content.pack(fill="both", expand=True, padx=10, pady=10)
         self.content.configure(state="disabled")
         # Enhanced tag configurations with better color contrast and hierarchy

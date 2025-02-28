@@ -27,7 +27,14 @@ class MainFrame(ctk.CTk):
         # Create status bar
         self.status_bar = StatusBar(self)
 
-        # Create QuestionGrid
+        # Create a container frame to hold both the question paper and main container
+        self.content_container = ctk.CTkFrame(self, fg_color="transparent")
+        self.content_container.pack(side="top", fill="both", expand=True)
+        # Configure content_container to allocate equal space
+        self.content_container.grid_rowconfigure(0, weight=1)
+        self.content_container.grid_rowconfigure(1, weight=1)
+        
+        # Create QuestionGrid - allocate 50% of vertical space
         questions = [{
             "question_id": 1,
             "question": "What is the capital of India?",
@@ -62,21 +69,24 @@ class MainFrame(ctk.CTk):
             )
             question_models.append(question_model)
 
-        # Pack QuestionGrid into main container
-        self.question_grid = QuestionPaperController(self, self.status_bar, question_models)
-        self.question_grid.pack(side="bottom", fill="both", expand=True)
+        # Create question paper in the top half of content_container
+        self.question_paper = QuestionPaperController(self.content_container, self.status_bar, question_models)
+        self.question_paper.pack(side="top", fill="both", expand=True, pady=(0, 5))
         
-        # Create main container frame to manage layout
-        self.main_container = ctk.CTkFrame(self)
-        self.main_container.pack(fill="both", expand=True)
+        # Create main container frame in the bottom half of content_container
+        self.main_container = ctk.CTkFrame(self.content_container, fg_color="transparent")
+        self.main_container.pack(side="bottom", fill="both", expand=True, pady=(5, 0))
+        # Configure main_container to allocate equal space
+        self.main_container.grid_rowconfigure(0, weight=1)
+        self.main_container.grid_rowconfigure(1, weight=1)
         
-        # Create UserPrompt at the bottom
+        # Create UserPrompt at the bottom of main_container
         self.user_prompt = UserPrompt(self.main_container)
-        self.user_prompt.pack(side="bottom", fill="both", expand=True)
+        # self.user_prompt.pack(side="bottom", fill="x")
         
-        # Create ContentDisplay
+        # Create ContentDisplay in the remaining space of main_container
         self.content_display = ContentDisplay(self.main_container)
-        self.content_display.pack(side="bottom", fill="both", expand=True)
+        # self.content_display.pack(side="top", fill="both", expand=True)
         self.content_display.display_content("Welcome to AgentX - Ollama Chatbot!\n\nPlease type your message in the box below and press 'Submit' to chat with the chatbot.")
         
 
@@ -93,7 +103,7 @@ class MainFrame(ctk.CTk):
             questions = response.content
 
             # Update QuestionGrid with new questions
-            self.question_grid.update_questions(questions)
+            self.question_paper.update_questions(questions)
             
             # Update content display with generated questions summary
             summary = f"Generated {len(questions)} questions based on your input:\n"
