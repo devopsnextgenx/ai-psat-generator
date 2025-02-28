@@ -30,6 +30,7 @@ class SystemAgent:
             {prompt}
 
             Create exact number of questions based on the prompt.
+            Make sure answer and explaination for each question is accurately provided.
             Make sure question is formatted in multiline markdown format, with numbers and key data elements as code.
 
             Provide the question, correct answer, and choices in the JSON format.
