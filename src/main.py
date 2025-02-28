@@ -1,11 +1,8 @@
-from threading import Thread, Event
+from threading import Thread
 from dotenv import load_dotenv
 from pathlib import Path
 from ai.ui.mainFrame import MainFrame
-import customtkinter as ctk
 import asyncio
-import time
-import queue
 
 # Get project base folder
 BASE_DIR = Path(__file__).resolve().parent

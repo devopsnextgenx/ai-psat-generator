@@ -1,4 +1,4 @@
-from .question import QuestionDisplay
-from .questionGrid import QuestionGrid
+from .question import QuestionView
+from .questionGrid import QuestionTrackerView
 
-__all__ = ["QuestionDisplay", "QuestionGrid"]
+__all__ = ["QuestionView", "QuestionTrackerView"]

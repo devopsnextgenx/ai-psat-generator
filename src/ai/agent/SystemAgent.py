@@ -1,32 +1,16 @@
 import logging
 from ai.agent.Agent import Agent
-from ai.config.AgentXSchema import LlmConfig
 from ai.models.schema import AgentResponse
-from ai.operators.executer import ALLOWED_COMMANDS
-from pydantic import BaseModel, Field, RootModel
-from typing import List, Literal
+from pydantic import Field, RootModel
+from typing import List
+from ai.models.psatModel import QuestionModel
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-ALLOWED_CHOICES = ['a', 'b', 'c', 'd']
-
-class Answer(BaseModel):
-    key: Literal['a', 'b', 'c', 'd']
-    explaination: str
-
-class Choice(BaseModel):
-    key: Literal['a', 'b', 'c', 'd']
-    value: str
-
-class Question(BaseModel):
-    question: str
-    answer: Answer
-    choices: List[Choice] = Field(..., min_items=2, max_items=4)
-
 class ResponseSchema(RootModel):
-    root: List[Question] = Field(..., min_items=1)
+    root: List[QuestionModel] = Field(..., min_items=1)
 
 class SystemAgent:
     def __init__(self):

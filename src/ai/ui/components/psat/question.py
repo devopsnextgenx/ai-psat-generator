@@ -1,109 +1,123 @@
 import customtkinter as ctk
+import tkinter as tk
+from typing import Callable
+from ai.models.psatModel import QuestionModel
+from ai.ui.components.psat.solution import Solution
 
-class QuestionDisplay(ctk.CTkFrame):
-    def __init__(self, master):
-        super().__init__(master)
-        self.selected_choice = ctk.StringVar()
-        self.show_answer = ctk.BooleanVar()
-        self.choice_buttons = []
+class QuestionView(ctk.CTkFrame):
+    """Question view component that displays a single question"""
+    def __init__(self, master, model: QuestionModel, on_selection_change: Callable = None):
+        super().__init__(master, fg_color="transparent")
+        self.model = model
+        self.on_selection_change = on_selection_change
+        self.choice_vars = []
         
-        # Initialize empty attributes
-        self.question = ""
-        self.choices = []
-        self.answer = ""
-        self.explanation = ""
+        self._create_widgets()
+        self._update_view()
         
-        self.create_widgets()
-
-    def create_widgets(self):
-        # Question Frame
-        self.question_frame = ctk.CTkFrame(self)
-        self.question_frame.pack(fill=ctk.X, pady=5)
-        self.question_label = ctk.CTkLabel(self.question_frame, text="", wraplength=400)
-        self.question_label.pack()
-
-        # Choices Frame
-        self.choices_frame = ctk.CTkFrame(self)
-        self.choices_frame.pack(fill=ctk.X, pady=5)
+    def _create_widgets(self):
+        # Top section for question and choices
+        self.content_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.content_frame.pack(fill=tk.BOTH, expand=True)
         
-        # Answer and Explanation Frame
-        self.answer_frame = ctk.CTkFrame(self)
-        self.answer_frame.pack(fill=ctk.X, pady=5)
-        self.answer_label = ctk.CTkLabel(self.answer_frame, text="", wraplength=400)
-        self.explanation_label = ctk.CTkLabel(self.answer_frame, text="", wraplength=400)
+        # Question text
+        self.question_frame = ctk.CTkFrame(self.content_frame, corner_radius=0)
+        self.question_frame.pack(fill=tk.X, padx=10, pady=(10, 0))
         
-        # Toggle Button
-        self.toggle_button = ctk.CTkCheckBox(
-            self,
-            text="Show Answer and Explanation",
-            variable=self.show_answer,
-            command=self.toggle_answer
+        self.question_label = ctk.CTkLabel(
+            self.question_frame, 
+            text=f"Question #{self.model.question_id}:", 
+            anchor="w",
+            pady=5,
+            padx=5
         )
-        self.toggle_button.pack(pady=5)
-
-    def update_question(self, question, choices, answer, explanation, selected_choice=None):
-        self.question = question
-        self.choices = choices
-        self.answer = answer
-        self.explanation = explanation
+        self.question_label.pack(anchor="w")
+        
+        self.question_text = ctk.CTkTextbox(self.question_frame, height=60)
+        self.question_text.pack(fill=tk.X, padx=5, pady=5)
+        self.question_text.insert("1.0", self.model.question_text)
+        self.question_text.configure(state="disabled")
+        
+        # Choices
+        self.choices_frame = ctk.CTkFrame(self.content_frame)
+        self.choices_frame.pack(fill=tk.X, padx=10, pady=10)
+        
+        self.choice_var = tk.StringVar(value="")
+        
+        for choice in self.model.choices:
+            choice_btn = ctk.CTkRadioButton(
+                self.choices_frame,
+                text=choice.value,
+                variable=self.choice_var,
+                value=choice.key,
+                command=self._on_choice_selection
+            )
+            choice_btn.pack(anchor="w", padx=20, pady=5)
+            self.choice_vars.append(choice_btn)
+        
+        # Bottom section for Solution and Save button
+        self.bottom_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.bottom_frame.pack(fill=tk.X, side=tk.BOTTOM, padx=10, pady=5)
+        
+        # Solution component (contains show answer and explanation)
+        self.solution = Solution(self.bottom_frame, self.model)
+        self.solution.pack(fill=tk.X, side=tk.TOP, expand=True)
+        
+        # Save button
+        self.save_btn = ctk.CTkButton(
+            self.bottom_frame,
+            text="Save",
+            width=90,
+            height=30,
+            corner_radius=8,
+            command=self._on_save_click
+        )
+        self.save_btn.pack(side=tk.BOTTOM, padx=10)
+        
+    def _on_save_click(self):
+        # Trigger save functionality in the parent controller
+        if hasattr(self.master, '_save_answers'):
+            self.master._save_answers()
+        
+    def _on_choice_selection(self):
+        selected = self.choice_var.get() if self.choice_var.get() else None
+        self.model.selected_choice = selected
+        if self.on_selection_change:
+            self.on_selection_change(self.model)
+    
+    def _update_view(self):
+        if self.model.selected_choice is not None:
+            self.choice_var.set(self.model.selected_choice)
+        # Update solution component
+        self.solution.update_model(self.model)
+    
+    def update_model(self, model: QuestionModel):
+        """Update the view with a new model"""
+        self.model = model
         
         # Update question text
-        self.question_label.configure(text=question)
+        self.question_text.configure(state="normal")
+        self.question_text.delete("1.0", tk.END)
+        self.question_text.insert("1.0", self.model.question_text)
+        self.question_text.configure(state="disabled")
         
-        # Clear and recreate choice buttons
-        for widget in self.choices_frame.winfo_children():
-            widget.destroy()
-        self.choice_buttons = []
+        # Update question number in label
+        self.question_label.configure(text=f"Question #{self.model.question_id}:")
         
-        # Set the selected choice
-        if selected_choice is not None:
-            self.selected_choice.set(selected_choice)
-        else:
-            self.selected_choice.set("")
-            
-        # Create new choice buttons
-        for choice in choices:
-            choice_button = ctk.CTkRadioButton(
-                self.choices_frame, 
-                text=choice,
-                variable=self.selected_choice,
-                value=choice
-            )
-            choice_button.pack(anchor=ctk.W, pady=2)
-            self.choice_buttons.append(choice_button)
-            
-        # Update answer and explanation
-        self.answer_label.configure(text=f"Answer: {answer}")
-        self.explanation_label.configure(text=f"Explanation: {explanation}")
+        # Reset choice selection
+        self.choice_var.set("")
         
-        # Reset answer visibility
-        self.show_answer.set(False)
-        self.toggle_answer()
-
-    def toggle_answer(self):
-        if self.show_answer.get():
-            self.answer_label.pack()
-            self.explanation_label.pack()
-        else:
-            self.answer_label.pack_forget()
-            self.explanation_label.pack_forget()
-            
-    def reset(self):
-        self.selected_choice.set("")
-        self.show_answer.set(False)
-        self.toggle_answer()
-
-    def get_selected_choice(self):
-        return self.selected_choice.get()
-
-    def hide_content(self):
-        self.question_label.pack_forget()
-        self.choices_frame.pack_forget()
-        self.answer_frame.pack_forget()
-        self.toggle_button.pack_forget()
-
-    def show_content(self):
-        self.question_label.pack()
-        self.choices_frame.pack(fill=ctk.X, pady=5)
-        self.answer_frame.pack(fill=ctk.X, pady=5)
-        self.toggle_button.pack(pady=5)
+        # Update choices text
+        for i, choice_btn in enumerate(self.choice_vars):
+            if i < len(self.model.choices):
+                choice_btn.configure(text=self.model.choices[i].value)
+                choice_btn.pack(anchor="w", padx=20, pady=5)
+            else:
+                choice_btn.pack_forget()  # Hide extra choices if any
+        
+        # Set the selected choice if there is one
+        if self.model.selected_choice is not None:
+            self.choice_var.set(self.model.selected_choice)
+        
+        # Update solution component
+        self.solution.update_model(self.model)
