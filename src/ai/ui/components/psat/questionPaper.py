@@ -18,7 +18,7 @@ class QuestionPaperController(ctk.CTkFrame):
         
         # Create main container frame
         self.main_frame = ctk.CTkFrame(master)
-        self.main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
         
         # Add title label
         self.title_label = ctk.CTkLabel(
@@ -42,7 +42,7 @@ class QuestionPaperController(ctk.CTkFrame):
             self.questions,  # Pass the questions list instead of just the count
             self._on_question_select
         )
-        self.tracker_view.pack(fill=tk.X, pady=10)
+        self.tracker_view.pack(fill=tk.X)
 
     def _calculate_score(self):
         """Calculate the current score"""

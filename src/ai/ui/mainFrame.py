@@ -62,23 +62,28 @@ class MainFrame(ctk.CTk):
             )
             question_models.append(question_model)
 
+        # Pack QuestionGrid into main container
         self.question_grid = QuestionPaperController(self, self.status_bar, question_models)
-        self.question_grid.pack(fill="both", expand=True)
-
-        # Create UserPrompt
-        self.user_prompt = UserPrompt(self)
-        self.user_prompt.pack(fill="x", pady=10)
+        self.question_grid.pack(side="bottom", fill="both", expand=True)
+        
+        # Create main container frame to manage layout
+        self.main_container = ctk.CTkFrame(self)
+        self.main_container.pack(fill="both", expand=True)
+        
+        # Create UserPrompt at the bottom
+        self.user_prompt = UserPrompt(self.main_container)
+        self.user_prompt.pack(side="bottom", fill="both", expand=True)
         
         # Create ContentDisplay
-        self.content_display = ContentDisplay(self)
-        self.content_display.pack(fill="both", expand=True)
-        self.content_display.display_content("bash Welcome to AgentX - Ollama Chatbot!\n\nPlease type your message in the box below and press 'Submit' to chat with the chatbot.")
-
+        self.content_display = ContentDisplay(self.main_container)
+        self.content_display.pack(side="bottom", fill="both", expand=True)
+        self.content_display.display_content("Welcome to AgentX - Ollama Chatbot!\n\nPlease type your message in the box below and press 'Submit' to chat with the chatbot.")
+        
 
     def update_status(self, progress, status, requestResult=None):
         self.status_bar.update_status(progress, status)
-        # if requestResult:
-        #     self.content_display.display_content(requestResult)
+        if requestResult:
+            self.content_display.display_content(requestResult)
 
     def handle_user_input(self, input_text):
         def action():
@@ -96,7 +101,7 @@ class MainFrame(ctk.CTk):
             summary += "Questions have been loaded into the question grid above."
             self.content_display.display_content(summary)
 
-            self.update_status(100, "Completed")
+            self.update_status(100, "Completed", response.content)
         
         # Start the action in a new thread
         threading.Thread(target=action).start()
