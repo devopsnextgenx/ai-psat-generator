@@ -81,7 +81,6 @@ class MainFrame(ctk.CTk):
         #     self.content_display.display_content(requestResult)
 
     def handle_user_input(self, input_text):
-        # Placeholder for the action to be invoked
         def action():
             self.update_status(50, "Sent Request")
             response = self.systemAgent.executeQuery(input_text)
@@ -90,6 +89,12 @@ class MainFrame(ctk.CTk):
 
             # Update QuestionGrid with new questions
             self.question_grid.update_questions(questions)
+            
+            # Update content display with generated questions summary
+            summary = f"Generated {len(questions)} questions based on your input:\n"
+            summary += f"Input prompt: {input_text}\n\n"
+            summary += "Questions have been loaded into the question grid above."
+            self.content_display.display_content(summary)
 
             self.update_status(100, "Completed")
         
