@@ -89,8 +89,8 @@ class MainFrame(ctk.CTk):
 
     def update_status(self, progress, status, requestResult=None):
         self.status_bar.update_status(progress, status)
-        if requestResult:
-            self.content_display.display_content(requestResult)
+        # if requestResult:
+        #     self.content_display.display_content(requestResult)
 
     def handle_user_input(self, input_text):
         def action():
@@ -108,7 +108,7 @@ class MainFrame(ctk.CTk):
             summary += "Questions have been loaded into the question grid above."
             self.content_display.display_content(summary)
 
-            self.update_status(100, "Completed", response.content)
+            self.update_status(100, "Completed")
         
         # Start the action in a new thread
         threading.Thread(target=action).start()
