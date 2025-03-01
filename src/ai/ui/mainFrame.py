@@ -79,6 +79,7 @@ class MainFrame(ctk.CTk):
         # Configure main_container to allocate equal space
         self.main_container.grid_rowconfigure(0, weight=1)
         self.main_container.grid_rowconfigure(1, weight=1)
+        self.main_container.grid_columnconfigure(0, weight=1)
         
         # Create UserPrompt at the bottom of main_container
         self.user_prompt = UserPrompt(self.main_container, self)

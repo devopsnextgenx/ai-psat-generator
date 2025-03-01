@@ -5,15 +5,17 @@ class UserPrompt(ctk.CTkFrame):
     def __init__(self, master, parent):
         super().__init__(master, fg_color="transparent")
         self.parent = parent
-        self.pack(side="bottom", fill="both", padx=10, pady=5, expand=True)
+        self.grid(row=1, column=0, sticky="nsew")
 
+        self.prompt_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.prompt_frame.pack(side="top", fill="both", expand=True, padx=10, pady=5)
         # Create input textbox
-        self.prompt = ctk.CTkTextbox(self, height=300)  # Approx 4 lines
+        self.prompt = ctk.CTkTextbox(self.prompt_frame, height=100)  # Approx 4 lines
         self.prompt.pack(side="top", fill="both", expand=True)
-        self.prompt.pack_propagate(False)
+        # self.prompt.pack_propagate(False)
         self.prompt.configure(font=("Arial", 14))  # Adjust text size
 
-        self.button_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.button_frame = ctk.CTkFrame(self.prompt_frame, fg_color="transparent")
         self.button_frame.pack(side="bottom", fill="both", expand=True, padx=10, pady=5)
 
         # Create reset and submit buttons
