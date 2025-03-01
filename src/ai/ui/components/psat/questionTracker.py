@@ -5,8 +5,9 @@ from ai.models.psatModel import QuestionModel
 
 class QuestionTrackerButton(ctk.CTkButton):
     """Custom button for the question tracker"""
-    def __init__(self, master, question_id: int, is_current: bool = False, 
+    def __init__(self, parent, master, question_id: int, is_current: bool = False, 
                  on_click: Callable = None, question_model: QuestionModel = None, **kwargs):
+        self.parent = parent
         self.question_id = question_id
         self.is_current = is_current
         self.on_click = on_click
@@ -26,6 +27,7 @@ class QuestionTrackerButton(ctk.CTkButton):
             "correct": {"fg": "#28A745", "hover": "#218838"},     # Green
             "incorrect": {"fg": "#DC3545", "hover": "#C82333"},   # Red
             "unanswered": {"fg": "#6C757D", "hover": "#5A6268"}, # Gray
+            "answered": {"fg": "#3B8ED0", "hover": "#36719F"}, # Gray
             "default": {"fg": "#6C757D", "hover": "#5A6268"}     # Gray
         }
         
@@ -46,13 +48,15 @@ class QuestionTrackerButton(ctk.CTkButton):
     
     def _get_button_colors(self) -> Dict[str, str]:
         """Determine button colors based on current state"""
-        if self.is_current:
-            return self.COLORS["current"]
-        
         if self.question_model:
+            # Get evaluated state from parent tracker
+            is_evaluated = self.parent.is_evaluated
+            
             if self.question_model.selected_choice is not None:
-                is_correct = self.question_model.selected_choice == self.question_model.correct_answer
-                return self.COLORS["correct"] if is_correct else self.COLORS["incorrect"]
+                if is_evaluated:
+                    is_correct = self.question_model.selected_choice == self.question_model.correct_answer
+                    return self.COLORS["correct"] if is_correct else self.COLORS["incorrect"]
+                return self.COLORS["answered"]
             return self.COLORS["unanswered"]
         
         return self.COLORS["default"]
@@ -67,14 +71,25 @@ class QuestionTrackerButton(ctk.CTkButton):
             self.is_current = is_current
             self.question_model = question_model
             colors = self._get_button_colors()
-            self.configure(fg_color=colors["fg"], hover_color=colors["hover"])
+            
+            # Add underline for current question
+            text = str(self.question_id)
+            if is_current:
+                text = f"_{text}_"  # Add underscores to indicate current question
+                
+            self.configure(
+                fg_color=colors["fg"], 
+                hover_color=colors["hover"],
+                text=text
+            )
         except tk.TclError:
             pass  # Ignore if widget is already destroyed
 
 class QuestionTrackerView(ctk.CTkFrame):
     """Component for tracking and navigating between questions"""
-    def __init__(self, master, questions: List[QuestionModel], on_question_select: Callable):
+    def __init__(self, parent, master, questions: List[QuestionModel], on_question_select: Callable):
         super().__init__(master, fg_color="transparent")
+        self.parent = parent
         self.questions = questions
         self.on_question_select = on_question_select
         self.current_question = 1
@@ -97,6 +112,7 @@ class QuestionTrackerView(ctk.CTkFrame):
             col = (i - 1) % cols_per_row
             is_current = i == self.current_question
             btn = QuestionTrackerButton(
+                self.parent,
                 buttons_frame,
                 question_id=i,
                 is_current=is_current,

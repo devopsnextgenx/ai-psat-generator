@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import tkinter as tk
 from ai.models.psatModel import QuestionModel, Choice
-from ai.ui.components.psat.questionGrid import QuestionTrackerView
+from ai.ui.components.psat.questionTracker import QuestionTrackerView
 from ai.ui.components.psat.question import QuestionView
 import json
 
@@ -12,6 +12,7 @@ class QuestionPaperController(ctk.CTkFrame):
         self.status_bar = status_bar
         self.questions = questions
         self.current_question_id = 1
+        self.is_evaluated = False
         
         # Create sample questions
         self._create_sample_questions()
@@ -38,11 +39,30 @@ class QuestionPaperController(ctk.CTkFrame):
         
         # Create question tracker
         self.tracker_view = QuestionTrackerView(
+            self,
             self.main_frame,
             self.questions,  # Pass the questions list instead of just the count
             self._on_question_select
         )
         self.tracker_view.pack(side="bottom", fill=tk.X)
+        
+        # Add evaluation checkbox
+        self.eval_var = tk.BooleanVar(value=False)
+        self.eval_checkbox = ctk.CTkCheckBox(
+            self.main_frame,
+            text="Show Results",
+            variable=self.eval_var,
+            command=self._toggle_evaluation
+        )
+        self.eval_checkbox.pack(pady=5)
+        
+        # Create score label
+        self.score_label = ctk.CTkLabel(
+            self.main_frame,
+            text="",
+            font=("Arial", 12)
+        )
+        self.score_label.pack(pady=5)
 
     def _calculate_score(self):
         """Calculate the current score"""
@@ -255,3 +275,23 @@ class QuestionPaperController(ctk.CTkFrame):
     def run(self):
         """Start the application"""
         self.root.mainloop()
+    
+    def _toggle_evaluation(self):
+        """Toggle evaluation state and update UI"""
+        self.is_evaluated = self.eval_var.get()
+        
+        # Update all question buttons in tracker
+        for question in self.questions:
+            self.tracker_view.update_question_state(
+                question.question_id,
+                question
+            )
+            
+        # Update score display
+        if self.is_evaluated:
+            correct, total = self._calculate_score()
+            self.score_label.configure(
+                text=f"Score: {correct}/{total} ({(correct/total)*100:.1f}%)"
+            )
+        else:
+            self.score_label.configure(text="")
