@@ -105,12 +105,13 @@ class MainFrame(ctk.CTk):
             
             # Update content display with generated questions summary
             summary = f"Generated `{len(questions)}` questions based on your input:\n"
-            summary += f"Input prompt: *{input_text}*\n"
             summary += "## Questions have been loaded into the question grid above."
             self.content_display.display_content(summary)
 
             self.update_status(100, "Completed")
         
+        summary = f"*{input_text}*\n"
+        self.content_display.display_content(summary, "user")
         # Start the action in a new thread
         threading.Thread(target=action).start()
 
