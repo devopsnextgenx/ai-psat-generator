@@ -25,7 +25,7 @@ class Solution(ctk.CTkFrame):
         self.show_answer_checkbox.pack(anchor="w", padx=10, pady=5)
         
         # Explanation
-        self.explanation_frame = ctk.CTkFrame(self)
+        self.explanation_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.explanation_frame.pack(fill=tk.X, padx=0, pady=5)
         
         self.explanation_label = ctk.CTkLabel(

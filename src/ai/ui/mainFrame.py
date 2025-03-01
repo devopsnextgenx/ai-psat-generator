@@ -27,9 +27,14 @@ class MainFrame(ctk.CTk):
         # Create status bar
         self.status_bar = StatusBar(self)
 
-        # Create a container frame to hold both the question paper and main container
-        self.content_container = ctk.CTkFrame(self, fg_color="transparent")
+        # Create a scrollable frame to hold the content
+        self.scrollable_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.scrollable_frame.pack(side="top", fill="both", expand=True)
+
+        # Create a container frame inside the scrollable frame
+        self.content_container = ctk.CTkFrame(self.scrollable_frame, fg_color="transparent")
         self.content_container.pack(side="top", fill="both", expand=True)
+
         # Configure content_container to allocate equal space
         self.content_container.grid_rowconfigure(1, weight=1)
         self.content_container.grid_columnconfigure(0, weight=1)
