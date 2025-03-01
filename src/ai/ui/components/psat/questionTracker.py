@@ -92,7 +92,6 @@ class QuestionTrackerView(ctk.CTkFrame):
         self.parent = parent
         self.questions = questions
         self.on_question_select = on_question_select
-        self.current_question = 1
         self.buttons = []
         
         self._create_widgets()
@@ -110,7 +109,7 @@ class QuestionTrackerView(ctk.CTkFrame):
         for i, question in enumerate(self.questions, 1):
             row = (i - 1) // cols_per_row
             col = (i - 1) % cols_per_row
-            is_current = i == self.current_question
+            is_current = question.is_current  # Get current status from model
             btn = QuestionTrackerButton(
                 self.parent,
                 buttons_frame,
@@ -123,7 +122,10 @@ class QuestionTrackerView(ctk.CTkFrame):
             self.buttons.append(btn)
     
     def _on_question_button_click(self, question_id: int):
-        self.set_current_question(question_id)
+        # Update model and UI
+        for i, question in enumerate(self.questions, 1):
+            question.is_current = (i == question_id)
+        self.update_all_buttons()
         if self.on_question_select:
             self.on_question_select(question_id)
     
@@ -131,26 +133,29 @@ class QuestionTrackerView(ctk.CTkFrame):
         """Update the state of a specific question button"""
         if 0 <= question_id - 1 < len(self.buttons):
             self.buttons[question_id - 1].update_state(
-                is_current=question_id == self.current_question,
+                is_current=question_model.is_current,
                 question_model=question_model
             )
     
     def set_current_question(self, question_id: int):
         """Update tracker to highlight the current question"""
         if 1 <= question_id <= len(self.questions):
-            self.current_question = question_id
-            
-            # Update states of existing buttons instead of recreating them
-            for i, btn in enumerate(self.buttons, 1):
-                btn.update_state(
-                    is_current=(i == question_id),
-                    question_model=self.questions[i-1]
-                )
+            # Update model
+            for i, question in enumerate(self.questions, 1):
+                question.is_current = (i == question_id)
+            self.update_all_buttons()
+
+    def update_all_buttons(self):
+        """Update all button states based on their respective models"""
+        for i, btn in enumerate(self.buttons, 1):
+            btn.update_state(
+                is_current=self.questions[i-1].is_current,
+                question_model=self.questions[i-1]
+            )
 
     def update_questions(self, questions: List[QuestionModel]):
         """Update all questions in the tracker"""
         self.questions = questions
-        self.current_question = 1
         
         # Remove old buttons properly using try-except
         for btn in self.buttons:
@@ -168,27 +173,5 @@ class QuestionTrackerView(ctk.CTkFrame):
             except tk.TclError:
                 pass
         
-        # Create new tracker label
-        tracker_label = ctk.CTkLabel(self, text="Question Tracker", anchor="w")
-        tracker_label.pack(anchor="w", padx=10, pady=(5, 10))
-        
-        # Create buttons frame
-        buttons_frame = ctk.CTkFrame(self, fg_color="transparent")
-        buttons_frame.pack(fill=tk.X, padx=10, pady=5)
-        
-        # Calculate cols_per_row as 30% of total questions, minimum 5, maximum 10
-        cols_per_row = max(5, min(10, round(len(self.questions) * 0.3)))
-        
-        for i, question in enumerate(self.questions, 1):
-            row = (i - 1) // cols_per_row
-            col = (i - 1) % cols_per_row
-            
-            btn = QuestionTrackerButton(
-                buttons_frame,
-                question_id=i,
-                is_current=(i == 1),
-                question_model=question,
-                on_click=self._on_question_button_click
-            )
-            btn.grid(row=row, column=col, padx=2, pady=2)
-            self.buttons.append(btn)
+        # Recreate widgets with new questions
+        self._create_widgets()

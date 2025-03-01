@@ -20,6 +20,7 @@ class QuestionModel(BaseModel):
     explanation: str
     selected_choice: Optional[Literal['a', 'b', 'c', 'd']] = None
     show_answer: bool = False  # Added this line
+    is_current: bool = False  # Added this line
     
     def to_dict(self) -> Dict:
         return self.model_dump()
