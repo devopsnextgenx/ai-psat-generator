@@ -32,7 +32,7 @@ class QuestionPaperController(ctk.CTkFrame):
         # Create question view
         self.question_view = QuestionView(
             self.main_frame, 
-            self.questions[self.current_question_id - 1],
+            [q for q in self.questions if q.is_current][0],
             self._on_selection_change
         )
         self.question_view.pack(fill=tk.BOTH, expand=True)
@@ -99,7 +99,8 @@ class QuestionPaperController(ctk.CTkFrame):
                 Choice(key='d', value="A form of mechanical advantage")
             ],
             correct_answer='a',
-            explanation="Friction is a force that opposes the relative motion between two surfaces in contact."
+            explanation="Friction is a force that opposes the relative motion between two surfaces in contact.",
+            is_current=True
         ))
 
         self.questions.append(QuestionModel(
@@ -169,8 +170,7 @@ class QuestionPaperController(ctk.CTkFrame):
     
     def _on_question_select(self, question_id: int):
         """Handle question selection from the tracker"""
-        self.current_question_id = question_id
-        self.question_view.update_model(self.questions[question_id - 1])
+        self.question_view.update_model([q for q in self.questions if q.question_id == question_id][0])
     
     def _on_selection_change(self, updated_model: QuestionModel):
         """Handle answer selection in current question"""
@@ -258,9 +258,6 @@ class QuestionPaperController(ctk.CTkFrame):
 
         # Update the questions list
         self.questions = question_models
-        
-        # Reset UI
-        self.current_question_id = 1
         
         # Update question view with first question
         if len(self.questions) > 0:

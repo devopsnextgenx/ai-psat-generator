@@ -131,11 +131,10 @@ class QuestionTrackerView(ctk.CTkFrame):
     
     def update_question_state(self, question_id: int, question_model: QuestionModel):
         """Update the state of a specific question button"""
-        if 0 <= question_id - 1 < len(self.buttons):
-            self.buttons[question_id - 1].update_state(
-                is_current=question_model.is_current,
-                question_model=question_model
-            )
+        self.buttons[question_id - 1].update_state(
+            is_current=question_model.is_current,
+            question_model=question_model
+        )
     
     def set_current_question(self, question_id: int):
         """Update tracker to highlight the current question"""
