@@ -85,7 +85,7 @@ class MainFrame(ctk.CTk):
         
         # Create ContentDisplay in the remaining space of main_container
         self.content_display = ContentDisplay(self.main_container)
-        self.content_display.display_content("Welcome to AgentX - Ollama Chatbot!\n\nPlease type your message in the box below and press 'Submit' to chat with the chatbot.")
+        self.content_display.display_content("## Welcome to AgentX - Ollama Chatbot!\n\nPlease type your message in the box below and press `'Submit'` to chat with the chatbot.")
 
     def update_status(self, progress, status, requestResult=None):
         self.status_bar.update_status(progress, status)
@@ -103,9 +103,9 @@ class MainFrame(ctk.CTk):
             self.question_paper.update_questions(questions)
             
             # Update content display with generated questions summary
-            summary = f"Generated {len(questions)} questions based on your input:\n"
-            summary += f"Input prompt: {input_text}\n\n"
-            summary += "Questions have been loaded into the question grid above."
+            summary = f"Generated `{len(questions)}` questions based on your input:\n"
+            summary += f"Input prompt: *{input_text}*\n"
+            summary += "## Questions have been loaded into the question grid above."
             self.content_display.display_content(summary)
 
             self.update_status(100, "Completed")
