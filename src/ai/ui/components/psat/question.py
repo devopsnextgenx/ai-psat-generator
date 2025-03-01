@@ -33,7 +33,7 @@ class QuestionView(ctk.CTkFrame):
         )
         self.question_label.pack(anchor="w")
         
-        self.question_text = ctk.CTkTextbox(self.question_frame, height=60)
+        self.question_text = ctk.CTkTextbox(self.question_frame, height=100)
         self.question_text.pack(fill=tk.BOTH, padx=5, pady=5)
         self.question_text.insert("1.0", self.model.question_text)
         self.question_text.configure(state="disabled")
@@ -44,9 +44,21 @@ class QuestionView(ctk.CTkFrame):
         
         self.choice_var = tk.StringVar(value="")
         
-        for choice in self.model.choices:
+        # Create left and right frames for two columns
+        left_frame = ctk.CTkFrame(self.choices_frame, fg_color="transparent")
+        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        right_frame = ctk.CTkFrame(self.choices_frame, fg_color="transparent")
+        right_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        
+        # Split choices into two columns
+        choices_count = len(self.model.choices)
+        mid_point = (choices_count + 1) // 2
+        
+        for i, choice in enumerate(self.model.choices):
+            parent_frame = left_frame if i < mid_point else right_frame
             choice_btn = ctk.CTkRadioButton(
-                self.choices_frame,
+                parent_frame,
                 text=choice.value,
                 variable=self.choice_var,
                 value=choice.key,
@@ -108,6 +120,9 @@ class QuestionView(ctk.CTkFrame):
         self.choice_var.set("")
         
         # Update choices text
+        choices_count = len(self.model.choices)
+        mid_point = (choices_count + 1) // 2
+        
         for i, choice_btn in enumerate(self.choice_vars):
             if i < len(self.model.choices):
                 choice_btn.configure(text=self.model.choices[i].value)
