@@ -2,12 +2,13 @@ import customtkinter as ctk
 import tkinter as tk
 
 class UserPrompt(ctk.CTkFrame):
-    def __init__(self, parent):
-        super().__init__(parent, fg_color="transparent")
+    def __init__(self, master, parent):
+        super().__init__(master, fg_color="transparent")
+        self.parent = parent
         self.pack(side="bottom", fill="both", padx=10, pady=5, expand=True)
 
         # Create input textbox
-        self.prompt = ctk.CTkTextbox(self, height=100)  # Approx 4 lines
+        self.prompt = ctk.CTkTextbox(self, height=300)  # Approx 4 lines
         self.prompt.pack(side="top", fill="both", expand=True)
         self.prompt.pack_propagate(False)
         self.prompt.configure(font=("Arial", 14))  # Adjust text size
@@ -35,11 +36,11 @@ class UserPrompt(ctk.CTkFrame):
 
     def reset(self):
         self.prompt.delete("1.0", tk.END)
-        self.master.reset_content_display()
+        self.parent.reset_content_display()
 
     def submit(self, event=None):
         input_text = self.prompt.get("1.0", tk.END).strip()
         if input_text:
             # Call the handle_user_input method from MainFrame
-            self.master.handle_user_input(input_text)
+            self.parent.handle_user_input(input_text)
             self.reset()

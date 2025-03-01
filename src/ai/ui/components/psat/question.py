@@ -22,7 +22,7 @@ class QuestionView(ctk.CTkFrame):
         
         # Question text
         self.question_frame = ctk.CTkFrame(self.content_frame, corner_radius=0, fg_color="transparent")
-        self.question_frame.pack(fill=tk.X, padx=10, pady=(10, 0))
+        self.question_frame.pack(fill=tk.BOTH, padx=10, pady=(10, 0))
         
         self.question_label = ctk.CTkLabel(
             self.question_frame, 
@@ -34,13 +34,13 @@ class QuestionView(ctk.CTkFrame):
         self.question_label.pack(anchor="w")
         
         self.question_text = ctk.CTkTextbox(self.question_frame, height=60)
-        self.question_text.pack(fill=tk.X, padx=5, pady=5)
+        self.question_text.pack(fill=tk.BOTH, padx=5, pady=5)
         self.question_text.insert("1.0", self.model.question_text)
         self.question_text.configure(state="disabled")
         
         # Choices
         self.choices_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        self.choices_frame.pack(fill=tk.X, padx=10, pady=10)
+        self.choices_frame.pack(fill=tk.BOTH, padx=10, pady=10)
         
         self.choice_var = tk.StringVar(value="")
         

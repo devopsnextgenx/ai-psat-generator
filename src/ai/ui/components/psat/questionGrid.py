@@ -89,7 +89,12 @@ class QuestionTrackerView(ctk.CTkFrame):
         buttons_frame = ctk.CTkFrame(self, fg_color="transparent")
         buttons_frame.pack(fill=tk.X, padx=10, pady=5)
         
+        # Calculate cols_per_row as 30% of total questions, minimum 5, maximum 10
+        cols_per_row = max(5, min(10, round(len(self.questions) * 0.3)))
+        
         for i, question in enumerate(self.questions, 1):
+            row = (i - 1) // cols_per_row
+            col = (i - 1) % cols_per_row
             is_current = i == self.current_question
             btn = QuestionTrackerButton(
                 buttons_frame,
@@ -98,7 +103,7 @@ class QuestionTrackerView(ctk.CTkFrame):
                 question_model=question,
                 on_click=self._on_question_button_click
             )
-            btn.grid(row=0, column=i-1, padx=2, pady=2)
+            btn.grid(row=row, column=col, padx=2, pady=2)
             self.buttons.append(btn)
     
     def _on_question_button_click(self, question_id: int):
@@ -134,7 +139,7 @@ class QuestionTrackerView(ctk.CTkFrame):
         # Remove old buttons properly using try-except
         for btn in self.buttons:
             try:
-                btn.grid_forget()  # Remove from grid instead of pack
+                btn.grid_forget()
                 btn.destroy()
             except tk.TclError:
                 pass  # Ignore if widget is already destroyed
@@ -145,18 +150,19 @@ class QuestionTrackerView(ctk.CTkFrame):
             try:
                 widget.destroy()
             except tk.TclError:
-                pass  # Ignore if widget is already destroyed
-        
-        # Recreate widgets with grid layout
-        buttons_frame = ctk.CTkFrame(self, fg_color="transparent")
-        buttons_frame.pack(fill=tk.X, padx=10, pady=5)
+                pass
         
         # Create new tracker label
         tracker_label = ctk.CTkLabel(self, text="Question Tracker", anchor="w")
         tracker_label.pack(anchor="w", padx=10, pady=(5, 10))
         
-        # Create new buttons
-        cols_per_row = 10  # Number of buttons per row
+        # Create buttons frame
+        buttons_frame = ctk.CTkFrame(self, fg_color="transparent")
+        buttons_frame.pack(fill=tk.X, padx=10, pady=5)
+        
+        # Calculate cols_per_row as 30% of total questions, minimum 5, maximum 10
+        cols_per_row = max(5, min(10, round(len(self.questions) * 0.3)))
+        
         for i, question in enumerate(self.questions, 1):
             row = (i - 1) // cols_per_row
             col = (i - 1) % cols_per_row
@@ -164,7 +170,7 @@ class QuestionTrackerView(ctk.CTkFrame):
             btn = QuestionTrackerButton(
                 buttons_frame,
                 question_id=i,
-                is_current=(i == 1),  # First question is current
+                is_current=(i == 1),
                 question_model=question,
                 on_click=self._on_question_button_click
             )

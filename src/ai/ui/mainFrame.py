@@ -31,8 +31,8 @@ class MainFrame(ctk.CTk):
         self.content_container = ctk.CTkFrame(self, fg_color="transparent")
         self.content_container.pack(side="top", fill="both", expand=True)
         # Configure content_container to allocate equal space
-        self.content_container.grid_rowconfigure(0, weight=1)
         self.content_container.grid_rowconfigure(1, weight=1)
+        self.content_container.grid_columnconfigure(0, weight=1)
         
         # Create QuestionGrid - allocate 50% of vertical space
         questions = [{
@@ -71,24 +71,21 @@ class MainFrame(ctk.CTk):
 
         # Create question paper in the top half of content_container
         self.question_paper = QuestionPaperController(self.content_container, self.status_bar, question_models)
-        self.question_paper.pack(side="top", fill="both", expand=True, pady=(0, 5))
         
         # Create main container frame in the bottom half of content_container
         self.main_container = ctk.CTkFrame(self.content_container, fg_color="transparent")
-        self.main_container.pack(side="bottom", fill="both", expand=True, pady=(5, 0))
+        self.main_container.grid(row=1, column=0, sticky="nsew")
+
         # Configure main_container to allocate equal space
         self.main_container.grid_rowconfigure(0, weight=1)
         self.main_container.grid_rowconfigure(1, weight=1)
         
         # Create UserPrompt at the bottom of main_container
-        self.user_prompt = UserPrompt(self.main_container)
-        # self.user_prompt.pack(side="bottom", fill="x")
+        self.user_prompt = UserPrompt(self.main_container, self)
         
         # Create ContentDisplay in the remaining space of main_container
         self.content_display = ContentDisplay(self.main_container)
-        # self.content_display.pack(side="top", fill="both", expand=True)
         self.content_display.display_content("Welcome to AgentX - Ollama Chatbot!\n\nPlease type your message in the box below and press 'Submit' to chat with the chatbot.")
-        
 
     def update_status(self, progress, status, requestResult=None):
         self.status_bar.update_status(progress, status)
