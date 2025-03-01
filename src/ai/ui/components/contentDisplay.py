@@ -6,8 +6,11 @@ class ContentDisplay(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent, fg_color="transparent")
         self.grid(row=0, column=0, sticky="nsew")
-        
-        self.content = ctk.CTkTextbox(self, wrap="word", height=200, state="disabled", fg_color="#1E1E1E", text_color="#EAEAEA", border_color="#444444")
+
+        self.content_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.content_frame.pack(side="top", fill="both", expand=True)
+
+        self.content = ctk.CTkTextbox(self.content_frame, wrap="word", height=200, state="disabled", fg_color="#1E1E1E", text_color="#EAEAEA", border_color="#444444")
         self.content.pack(fill="both", expand=True, padx=10, pady=10)
         self.content.configure(state="disabled")
         # Enhanced tag configurations with better color contrast and hierarchy
