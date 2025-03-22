@@ -1,21 +1,41 @@
-# My Python Project
+### Test MCP servers
+- `sse`
 
-## Overview
-This project is a Python application designed to demonstrate a basic structure for organizing Python code. It includes a main entry point and is structured to facilitate easy expansion and maintenance.
-
-## Installation
-To install the required dependencies, run the following command:
-
-```
-pip install -r requirements.txt
+```bash
+mcp-inspector uv run ~/git/devopsnextgenx/personal-bot/mcp-sse.py --transport sse --port 1111
 ```
 
-## Usage
-To run the application, execute the following command:
-
-```
-python src/main.py
+- `stdio`
+```bash
+mcp-inspector uv run --directory ~/git/devopsnextgenx/personal-bot mcp-stdio.py
 ```
 
-## Contributing
-Contributions are welcome! Please feel free to submit a pull request or open an issue for any suggestions or improvements.
+### ROO code
+- run mcp server sse `uv run ~/git/devopsnextgenx/personal-bot/mcp-sse.py --transport sse --port 1111`
+
+
+```json
+{
+  "mcpServers": {
+    "stdio": {
+      "command": "/home/shared/pyenv/bin/py",
+      "args": [
+        "~/git/devopsnextgenx/personal-bot/mcp-stdio.py"
+      ],
+      "env": {},
+      "disabled": true,
+      "alwaysAllow": [
+        "calculateSum",
+        "encryptBase64",
+        "decryptBase64",
+        "echo"
+      ]
+    },
+    "sse": {
+      "url": "http://localhost:1111/sse",
+      "alwaysAllow": [],
+      "disabled": false
+    }
+  }
+}
+```
