@@ -11,11 +11,7 @@ class QuestionPaperController(ctk.CTkFrame):
         super().__init__(parent, fg_color="transparent")
         self.status_bar = status_bar
         self.questions = questions
-        self.current_question_id = 1
         self.is_evaluated = False
-        
-        # Create sample questions
-        self._create_sample_questions()
         
         # Create main container frame
         self.main_frame = ctk.CTkFrame(parent, fg_color="transparent")
@@ -28,14 +24,28 @@ class QuestionPaperController(ctk.CTkFrame):
             font=("Arial", 16, "bold")
         )
         self.title_label.pack(pady=10)
-        
-        # Create question view
-        self.question_view = QuestionView(
-            self.main_frame, 
-            [q for q in self.questions if q.is_current][0],
-            self._on_selection_change
-        )
-        self.question_view.pack(fill=tk.BOTH, expand=True)
+        if len([q for q in self.questions if q.is_current]):
+            current_q = [q for q in self.questions if q.is_current][0]
+            if current_q is None:
+                self.status_bar.update_status(4, "No questions found, setting current as first question.")
+                self.questions[0].is_current = True
+                current_q = self.questions[0]
+            # Create question view
+            self.question_view = QuestionView(
+                self.main_frame, 
+                [q for q in self.questions if q.is_current][0],
+                self._on_selection_change
+            )
+            self.question_view.pack(fill=tk.BOTH, expand=True)
+        else:
+            self.status_bar.update_status(4, "No questions found, please load questions.")
+            # Create question view
+            self.question_view = QuestionView(
+                self.main_frame, 
+                None,
+                self._on_selection_change
+            )
+            self.question_view.pack(fill=tk.BOTH, expand=True)
         
         # Create question tracker
         self.tracker_view = QuestionTrackerView(
@@ -86,87 +96,6 @@ class QuestionPaperController(ctk.CTkFrame):
         status_text = (f"Score: {correct}/{total} correct | "
                     f"Progress: {answered}/{total} answered")
         self.status_bar.update_status(progress, status_text)
-
-    def _create_sample_questions(self):
-        """Create sample question data using the new QuestionModel format"""
-        self.questions.append(QuestionModel(
-            question_id=1,
-            question_text="What is friction?",
-            choices=[
-                Choice(key='a', value="A force that opposes motion between surfaces in contact"),
-                Choice(key='b', value="A force that accelerates objects"),
-                Choice(key='c', value="A type of energy conversion"),
-                Choice(key='d', value="A form of mechanical advantage")
-            ],
-            correct_answer='a',
-            explanation="Friction is a force that opposes the relative motion between two surfaces in contact.",
-            is_current=True
-        ))
-
-        self.questions.append(QuestionModel(
-            question_id=2,
-            question_text="Which of Newton's laws states that for every action, there is an equal and opposite reaction?",
-            choices=[
-                Choice(key='a', value="First law"),
-                Choice(key='b', value="Second law"),
-                Choice(key='c', value="Third law"),
-                Choice(key='d', value="Fourth law")
-            ],
-            correct_answer='c',
-            explanation="Newton's Third Law states that for every action, there is an equal and opposite reaction. This means that forces always occur in pairs."
-        ))
-        
-        self.questions.append(QuestionModel(
-            question_id=3,
-            question_text="What is the SI unit of electric current?",
-            choices=[
-                Choice(key='a', value="Volt"),
-                Choice(key='b', value="Ohm"),
-                Choice(key='c', value="Ampere"),
-                Choice(key='d', value="Coulomb")
-            ],
-            correct_answer='c',
-            explanation="The SI unit of electric current is the ampere (A), which measures the rate of flow of electric charge."
-        ))
-        
-        self.questions.append(QuestionModel(
-            question_id=4,
-            question_text="What is the formula for calculating work?",
-            choices=[
-                Choice(key='a', value="W = m × g"),
-                Choice(key='b', value="W = F × d × cos(θ)"),
-                Choice(key='c', value="W = 1/2 × m × v²"),
-                Choice(key='d', value="W = P × t")
-            ],
-            correct_answer='b',
-            explanation="Work is calculated as force times displacement times the cosine of the angle between them: W = F × d × cos(θ)."
-        ))
-        
-        self.questions.append(QuestionModel(
-            question_id=5,
-            question_text="Which of the following is a vector quantity?",
-            choices=[
-                Choice(key='a', value="Mass"),
-                Choice(key='b', value="Temperature"),
-                Choice(key='c', value="Time"),
-                Choice(key='d', value="Acceleration")
-            ],
-            correct_answer='d',
-            explanation="Acceleration is a vector quantity because it has both magnitude and direction. Mass, temperature, and time are scalar quantities."
-        ))
-        
-        self.questions.append(QuestionModel(
-            question_id=6,
-            question_text="What causes the tides on Earth?",
-            choices=[
-                Choice(key='a', value="Earth's rotation"),
-                Choice(key='b', value="Solar winds"),
-                Choice(key='c', value="Gravitational pull of the Moon and Sun"),
-                Choice(key='d', value="Ocean currents")
-            ],
-            correct_answer='c',
-            explanation="Tides on Earth are primarily caused by the gravitational pull of the Moon and to a lesser extent, the Sun."
-        ))
     
     def _on_question_select(self, question_id: int):
         """Handle question selection from the tracker"""
@@ -242,6 +171,9 @@ class QuestionPaperController(ctk.CTkFrame):
                 for choice_dict in q["choices"]:
                     choices.append(Choice(key=choice_dict["key"].lower(), value=str(choice_dict["value"])))
                 
+                if not hasattr(q, "is_current"):
+                    q["is_current"] = False
+
                 # Create QuestionModel instance
                 question_model = QuestionModel(
                     question_id=q["question_id"],
@@ -249,8 +181,10 @@ class QuestionPaperController(ctk.CTkFrame):
                     choices=choices,
                     correct_answer=q["correct_answer"].lower(),  # Ensure lowercase
                     explanation=str(q["explanation"]),
-                    show_answer=False
+                    show_answer=False,
+                    is_current=q["is_current"]
                 )
+
                 question_models.append(question_model)
             except Exception as e:
                 print(f"Error processing question: {e}")
@@ -261,7 +195,10 @@ class QuestionPaperController(ctk.CTkFrame):
         
         # Update question view with first question
         if len(self.questions) > 0:
-            self.question_view.update_model(self.questions[0])
+            for q in self.questions:
+                if q.is_current:
+                    self.question_view.update_model(q)
+                    break
             
         # Update tracker view
         self.tracker_view.update_questions(self.questions)

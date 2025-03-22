@@ -14,8 +14,11 @@ class QuestionView(ctk.CTkFrame):
         
         self._create_widgets()
         self._update_view()
+        self.viewInitialized = False
         
     def _create_widgets(self):
+        if self.model is None:
+            return
         # Top section for question and choices
         self.content_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.content_frame.pack(fill=tk.BOTH, expand=True)
@@ -85,6 +88,7 @@ class QuestionView(ctk.CTkFrame):
             command=self._on_save_click
         )
         self.save_btn.pack(side=tk.BOTTOM, padx=10)
+        self.viewInitialized = True
         
     def _on_save_click(self):
         # Trigger save functionality in the parent controller
@@ -98,15 +102,19 @@ class QuestionView(ctk.CTkFrame):
             self.on_selection_change(self.model)
     
     def _update_view(self):
-        if self.model.selected_choice is not None:
+        if self.model is not None and self.model.selected_choice is not None:
             self.choice_var.set(self.model.selected_choice)
         # Update solution component
-        self.solution.update_model(self.model)
+        if hasattr(self, 'solution'):
+            self.solution.update_model(self.model)
     
     def update_model(self, model: QuestionModel):
         """Update the view with a new model"""
         self.model = model
         
+        if not self.viewInitialized:
+            self._create_widgets()
+            return
         # Update question text
         self.question_text.configure(state="normal")
         self.question_text.delete("1.0", tk.END)
